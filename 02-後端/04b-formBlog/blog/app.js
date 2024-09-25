@@ -1,17 +1,17 @@
 import { Application, Router } from "https://deno.land/x/oak/mod.ts";
-import * as render from './render.js'
+import * as render from './render.js';
 
 const posts = [
-  {id:0, title:'aaa', body:'aaaaa'},
-  {id:1, title:'bbb', body:'bbbbb'}
+  { id: 0, title: 'aaa', body: 'aaaaa', created_at: new Date().toLocaleString() },
+  { id: 1, title: 'bbb', body: 'bbbbb', created_at: new Date().toLocaleString() }
 ];
 
 const router = new Router();
 
-router.get('/', list)
-  .get('/post/new', add)
-  .get('/post/:id', show)
-  .post('/post', create);
+router.get('/', list)        
+  .get('/post/new', add)     
+  .get('/post/:id', show)    
+  .post('/post', create);    
 
 const app = new Application();
 app.use(router.routes());
@@ -26,27 +26,43 @@ async function add(ctx) {
 }
 
 async function show(ctx) {
-  const id = ctx.params.id;
-  const post = posts[id];
-  if (!post) ctx.throw(404, 'invalid post id');
+  const id = parseInt(ctx.params.id, 10); 
+  const post = posts.find(p => p.id === id);
+  
+  if (!post) {
+    ctx.throw(404, '無效的文章'); 
+  }
+  
   ctx.response.body = await render.show(post);
 }
 
 async function create(ctx) {
-  const body = ctx.request.body
-  if (body.type() === "form") {
-    const pairs = await body.form() // body.value
-    const post = {}
+  const body = ctx.request.body; 
+  
+  if (body.type === "form") {
+    const pairs = await body.value; 
+    const post = {};
+
     for (const [key, value] of pairs) {
-      post[key] = value
+      post[key] = value.trim(); 
     }
-    console.log('post=', post)
-    const id = posts.push(post) - 1;
-    post.created_at = new Date();
-    post.id = id;
-    ctx.response.redirect('/');
+
+    if (!post.title || !post.body) {
+      ctx.response.status = 400;
+      ctx.response.body = "Error"; 
+      return;
+    }
+
+    post.id = posts.length; 
+    post.created_at = new Date().toLocaleString(); 
+
+    posts.push(post); 
+    ctx.response.redirect('/'); 
+  } else {
+    ctx.response.status = 415; 
+    ctx.response.body = "Error"; 
   }
 }
 
-console.log('Server run at http://127.0.0.1:8000')
-await app.listen({ port: 8000 });
+console.log('Server running at http://127.0.0.1:8080');
+await app.listen({ port: 8080 });

@@ -33,21 +33,7 @@ async function show(ctx) {
 }
 
 async function create(ctx) {
-  /*
-  const body = ctx.request.body
-  if (body.type() === "form") {
-    const pairs = await body.form() // body.value
-    const post = {}
-    for (const [key, value] of pairs) {
-      post[key] = value
-    }
-    console.log('post=', post)
-    const id = posts.push(post) - 1;
-    post.created_at = new Date();
-    post.id = id;
-    ctx.response.redirect('/');
-  }
-  */
+
   var params = ctx.request.url.searchParams
   var title = params.get('title')
   var body = params.get('body')

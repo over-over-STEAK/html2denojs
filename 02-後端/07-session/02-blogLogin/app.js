@@ -7,7 +7,7 @@ const db = new DB("blog.db");
 db.query("CREATE TABLE IF NOT EXISTS posts (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, title TEXT, body TEXT)");
 
 const userMap = {
-  ccc: { username:'ccc', password: '123' },
+  ccc: { username:'aaa', password: 'bbb' },
   snoopy: { username:'snoopy', password: '321' }
 }
 
@@ -83,7 +83,8 @@ async function add(ctx) {
 
 async function show(ctx) {
   const pid = ctx.params.id;
-  let posts = query(`SELECT id, username, title, body FROM posts WHERE id=${pid}`)
+  let posts = query(`SELECT id, username, title, body FROM posts WHERE id = ?`, [pid]);
+
   let post = posts[0]
   console.log('show:post=', post)
   if (!post) ctx.throw(404, 'invalid post id');

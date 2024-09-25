@@ -7,7 +7,7 @@ app.use((ctx) => {
   console.log('url=', ctx.request.url)
   let pathname = ctx.request.url.pathname
   if (pathname == '/name') {
-    ctx.response.body = '陳鍾誠'
+    ctx.response.body = '陳鐘誠'
   } else {
     
   }
